@@ -27,13 +27,6 @@ async def upload_data(project_id: str, file: UploadFile,
   data_controller = DataController()
   is_valid, result_signal = data_controller.vaildate_upload_file(file=file)
 
-#   if not file:
-#       raise HTTPException(status_code=400, detail="No file provided")
-  
-#   # طباعة معلومات الملف للتصحيح
-#   print(f"Received file: {file.filename}, Content-Type: {file.content_type}")
-  
-
   # إذا كان الملف غير صالح، إرجاع استجابة خطأ
   if not is_valid:
       return JSONResponse(
