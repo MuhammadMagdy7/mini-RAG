@@ -129,6 +129,8 @@ async def process_endpoint(request: Request, project_id:str, procss_request: Pro
           content={"Signal": ResponseSignal.PROCESSING_FAILED.value}
       )
 
+    print(project)
+
     file_chunks_records = [
     DataChunk(
         chunk_text= chunk.page_content,
