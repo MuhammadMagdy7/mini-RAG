@@ -9,9 +9,10 @@ import logging
 from .schemes.data import ProcessRequest
 from fastapi import HTTPException
 from models.ProjectModel import ProjectModel
-from models.db_schemes import DataChunk
+from models.AssetModel import AssetModel
+from models.db_schemes import DataChunk, Asset
 from models.ChunkModel import ChunkModel
-
+from models.enums.AssetTypeEnum import AssetTypeEnum
 # إعداد نظام تسجيل الأخطاء
 logger = logging.getLogger('uvicorn.error')
 
@@ -68,11 +69,26 @@ async def upload_data(request: Request, project_id: str, file: UploadFile,
             content={"Signal": ResponseSignal.FILE_UPLOAD_FAILED.value}
         )
 
+
+    asset_model = await AssetModel.create_instance(
+        db_client= request.app.db_client
+    )
+
+    asset_resource = Asset(
+        asset_project_id = project.id,
+        asset_type=AssetTypeEnum.FILE.value,
+        asset_name=file_id,
+        asset_size=os.path.getsize(file_path)
+    )
+
+    asset_record = await asset_model.create_asset(asset_resource)
+
+
     # إرجاع استجابة نجاح عند اكتمال التحميل
     return JSONResponse(
         content={
             "Signal": ResponseSignal.FILE_UPLOAD_SUCCESS.value,
-            "file_id": file_id,
+            "file_id": str(asset_record.id),
         }
     )
 
