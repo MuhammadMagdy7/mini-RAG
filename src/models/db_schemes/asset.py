@@ -1,22 +1,3 @@
-# from pydantic import BaseModel, Field, validator
-# from typing import Optional
-# from bson import ObjectId
-# from datetime import datetime
-
-# class Asset(BaseModel):
-#     id: Optional[ObjectId] = Field(None, alies="_id")
-#     asset_project_id : ObjectId
-#     asset_type: str = Field(..., min_length=1)
-#     asset_name: str = Field(..., min_length=1)
-#     asset_size: int = Field(ge=0, defualt=None)
-#     asset_config: dict = Field(defualt=None)
-#     asset_pushed_at : datetime = Field(defualt=datetime.utcnow)
-
-
-
-#     class Config:
-#         arbitrary_types_allowed = True
-
 
 from pydantic import BaseModel, Field
 from typing import Optional
