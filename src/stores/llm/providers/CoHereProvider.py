@@ -2,7 +2,7 @@ from ..LLMInterface import LLMInterface
 from ..LLMEnums import CoHereEnums, DocumentTypeEnums 
 import cohere
 import logging
-
+import time
 
 class CoHereProvider(LLMInterface):
 
@@ -81,25 +81,58 @@ class CoHereProvider(LLMInterface):
             return None
         
 
-        input_type = CoHereEnums.DOCUMENT.value
-        if document_type == DocumentTypeEnums.QUERY.value:
-            input_type = CoHereEnums.QUERY.value
+        input_type = CoHereEnums.DOCUMENT
+        if document_type == DocumentTypeEnums.QUERY:
+            input_type = CoHereEnums.QUERY
 
-
-
-        response = self.clinet.embed(
+        response = self.client.embed(
             model = self.embedding_model_id,
             texts = [self.process_text(text)],
             input_type= input_type,
             embedding_types=['float']
         )
         # response.embeddings.float
-
         if not response or not response.embeddings or not response.embeddings.float:
             self.logger.error("Error while embedding text with CoHere")
             return None
 
         return response.embeddings.float[0]
+
+    # def embed_text(self, text: str, document_type: str = None, max_retries: int = 3):
+    #   if not self.client:
+    #       self.logger.error("CoHere client was not set")
+    #       return None
+
+    #   if not self.embedding_model_id:
+    #       self.logger.error("Embedding model for CoHere was not set")
+    #       return None
+
+    #   input_type = CoHereEnums.DOCUMENT
+    #   if document_type == DocumentTypeEnums.QUERY:
+    #       input_type = CoHereEnums.QUERY
+
+    #   retries = 0
+    #   while retries < max_retries:
+    #       try:
+    #           response = self.client.embed(
+    #               model=self.embedding_model_id,
+    #               texts=[self.process_text(text)],
+    #               input_type=input_type,
+    #               embedding_types=['float']
+    #           )
+    #           if not response or not response.embeddings or not response.embeddings.float:
+    #               self.logger.error("Error while embedding text with CoHere")
+    #               return None
+
+    #           return response.embeddings.float[0]
+
+    #       except cohere.errors.TooManyRequestsError as e:
+    #           self.logger.error(f"Rate limit exceeded: {e}. Retrying in 10 seconds...")
+    #           time.sleep(10)  # زيادة فترة الانتظار إلى 10 ثوانٍ
+    #           retries += 1
+
+    #   self.logger.error("Max retries exceeded for embedding text with CoHere")
+    #   return None
 
     def construct_prompt(self, prompt: str, role: str):
         return {
